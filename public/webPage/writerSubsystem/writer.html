@@ -9,4 +9,88 @@
     <!--- estilos con CSS -->
     <link rel="stylesheet" href="../styles.css">
 </head>
-<body>hola writer</body>
+<body onload="CargaDatos()">
+<div class="contenedor">
+    <div class="cabecera-principal">
+        <h1>Anales de la Ciencia</h1>
+    </div>
+    <div class="div-logout">
+        <input id="boton-logout" type="button" name="logout" value="Logout" onclick="Logout()" />
+    </div>
+    <div>
+        <p id="info-usuario">User: xxx - Role: xxx</p>
+    </div>
+    <div class="div-botonesCrear">
+        <input type="button" name="crearProducto" value="Crear Producto" onclick="" />
+        <input type="button" name="crearPersona" value="Crear Persona" onclick="" />
+        <input type="button" name="crearEntidad" value="Crear Entidad" onclick="" />
+    </div>
+    <div class="contenido">
+        <div class="div_izquierda" id="div_productos">
+            dadad
+        </div>
+        <div class="div_centro" id="div_personas">
+            adad
+        </div>
+        <div class="div_derecha" id="div_entidades">
+            adad
+        </div>
+    </div>
+</div>
+<script>
+    const authHeader = null
+    function Logout(){
+        location.replace("http://127.0.0.1:8000/webPage/index.html")
+    }
+
+    function CargaDatos(){
+        //Recuperamos el authHeader del querystring del URL para poder hacer las operaciones
+        //Esto puede no ser neceario en el subsistema reader ya que solo será necesario hacer peticiones GET
+        const urlParams = new URLSearchParams(window.location.search);
+        const authHeader = urlParams.get('authHeader');
+        CargaProductos(authHeader);
+        CargaPersonas(authHeader);
+        CargaEntidades(authHeader);
+    }
+
+    function CargaProductos(authHeader){
+        //Hacemos una peticion GET a la ruta de los productos y trabajamos insertando en el DOM los elementos
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/products',
+            headers: {"Authorization": authHeader},
+            // dataType: 'json',
+            success: function (data) {
+                $('#div_productos').html(JSON.stringify(data));
+            }
+        })
+    }
+
+    function CargaPersonas(authHeader){
+        //Hacemos una peticion GET a la ruta de los personas y trabajamos insertando en el DOM los elementos
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/persons',
+            headers: {"Authorization": authHeader},
+            // dataType: 'json',
+            success: function (data) {
+                $('#div_personas').html(JSON.stringify(data));
+            }
+        })
+    }
+
+    function CargaEntidades(authHeader){
+        //Hacemos una peticion GET a la ruta de los entidades y trabajamos insertando en el DOM los elementos
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/entities',
+            headers: {"Authorization": authHeader},
+            // dataType: 'json',
+            success: function (data) {
+                $('#div_entidades').html(JSON.stringify(data));
+            }
+        })
+    }
+
+</script>
+</body>

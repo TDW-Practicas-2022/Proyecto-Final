@@ -1,15 +1,14 @@
 body { background-color: #3B3B3B }
 
-p,li { color: #FFFFFF }
+p,li { color: #D38740 }
 
-h1, label, h4 {
+h1, label, h4, h3 ,h2 {
     color: #D38740;
     text-align: center;
 }
 
-h3 {
+#bienvenida{
     text-decoration: underline;
-    color: #FFFFFF
 }
 
 .cabecera-principal {
@@ -48,4 +47,41 @@ h3 {
 
 .formulario-login{
     text-align: center;
+}
+
+.div-logout, #info-usuario{
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.div-botonesCrear{
+    margin-top: 10px;
+    text-align: center;
+}
+
+.contenido{
+    display: flex;
+    text-align: center;
+}
+
+.div_izquierda, .div_centro,  .div_derecha{
+    width: 33%;
+    margin-top: 20px;
+}
+
+.imageProducto, .imagePersona, .imageEntidad{
+    width: 5%;
+}
+
+/* ####################################################*/
+/* Estilos de la página details */
+/* ####################################################*/
+
+#div-botonVolver-details{
+    margin-top: 10px;
+}
+
+.div_izquierda_details, .div_derecha_details{
+    margin-top: 40px;
+    width: 50%;
 }

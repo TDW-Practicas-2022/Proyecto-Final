@@ -83,10 +83,11 @@
                     }
                     i += 1;
                 }
+                //Usamos querystrings para pasar datos entre diferentes archivos HTMl
                 if(userRole === "writer"){
-                    location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html");
+                    location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
                 }else{
-                    location.replace("http://127.0.0.1:8000/webPage/readerSubsystem/reader.html");
+                    location.replace("http://127.0.0.1:8000/webPage/readerSubsystem/reader.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
                 }
             }
         })
