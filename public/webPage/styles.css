@@ -2,7 +2,7 @@ body { background-color: #3B3B3B }
 
 p,li { color: #FFFFFF }
 
-h1 {
+h1, label, h4 {
     color: #D38740;
     text-align: center;
 }
@@ -41,7 +41,11 @@ h3 {
     margin-top: 40px;
 }
 
-.div-botones {
+.div-botones, .botones-login {
     text-align: center;
     margin-top: 40px;
+}
+
+.formulario-login{
+    text-align: center;
 }
