@@ -64,7 +64,7 @@ final class JwtAuth
     }
 
     /**
-     * Create JSON web token.
+     * create JSON web token.
      *
      * @param User $user
      * @param array $requestedScopes Requested scopes

@@ -14,6 +14,6 @@ use TDW\ACiencia\Utility\Utils;
 $proyectBaseDir = dirname(__DIR__);
 require_once $proyectBaseDir . '/vendor/autoload.php';
 
-// 1. Create DI Container + Instantiation
+// 1. create DI Container + Instantiation
 Utils::loadEnv($proyectBaseDir);
 (require $proyectBaseDir . '/config/bootstrap.php')->run();

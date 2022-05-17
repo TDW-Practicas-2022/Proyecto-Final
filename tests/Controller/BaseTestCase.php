@@ -66,7 +66,7 @@ class BaseTestCase extends TestCase
         array $requestHeaders = null
     ): Response {
 
-        // Create a mock environment for testing with
+        // create a mock environment for testing with
         $environment = Environment::mock(
             [
                 'REQUEST_METHOD'     => $requestMethod,

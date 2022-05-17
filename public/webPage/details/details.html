@@ -37,9 +37,6 @@
         let authHeader = urlParams.get('authHeader');
         let  userName = urlParams.get('userName');
         let  userRole = urlParams.get('userRole');
-        console.log(authHeader);
-        console.log(userName);
-        console.log(userRole);
 
         let h1 = document.createElement("h1");
         let text_h1 = document.createTextNode("Anales de la Ciencia - "+name);
@@ -92,7 +89,13 @@
         let authHeader = urlParams.get('authHeader');
         let  userName = urlParams.get('userName');
         let  userRole = urlParams.get('userRole');
-        location.replace("http://127.0.0.1:8000/webPage/readerSubsystem/reader.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+
+        if (userRole === "reader"){
+            location.replace("http://127.0.0.1:8000/webPage/readerSubsystem/reader.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+        }else{
+            location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+        }
+
     }
 </script>
 </body>

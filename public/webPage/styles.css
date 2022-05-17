@@ -85,3 +85,15 @@ h1, label, h4, h3 ,h2 {
     margin-top: 40px;
     width: 50%;
 }
+
+/* ####################################################*/
+/* Estilos de la página createProducto*/
+/* ####################################################*/
+
+.div-volver-crear-producto, .div-volver-crear-persona, .div-volver-crear-entidad, .div-volver-editar-entidad, .div-volver-editar-persona, .div-volver-editar-producto{
+    margin-top: 10px;
+}
+
+#div_formulario_crear, #div_formulario_editar{
+    text-align: center;
+}

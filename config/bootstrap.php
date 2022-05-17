@@ -14,7 +14,7 @@ try {
     // Build PHP-DI Container instance
     $container = $containerBuilder->build();
 
-    // Create App instance
+    // create App instance
     $app = $container->get(App::class);
 } catch (Throwable $e) {
     fwrite(STDERR, 'EXCEPCIÓN: ' . $e->getCode() . ' - ' . $e->getMessage() . PHP_EOL);

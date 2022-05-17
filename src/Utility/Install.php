@@ -59,7 +59,7 @@ abstract class Install
             exit(1);
         }
 
-        // Create/update tables in the database
+        // create/update tables in the database
         Utils::updateSchema();
         $event->getIO()->write('>> Database UPDATED');
 
