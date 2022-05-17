@@ -19,7 +19,6 @@
         <input id="boton-logout" type="button" name="logout" value="Logout" onclick="Logout()" />
     </div>
     <div class= "div_info" id="div_info_usuario">
-        <!--<p id="info-usuario">User: xxx - Role: xxx</p>-->
     </div>
     <div class="contenido">
         <div class="div_izquierda" id="div_productos">
@@ -31,9 +30,9 @@
     </div>
 </div>
 <script>
-    const authHeader = null
-    const userName = null
-    const userRole = null
+    let authHeader = null
+    let userName = null
+    let userRole = null
 
     function Logout(){
         location.replace("http://127.0.0.1:8000/webPage/index.html")
@@ -42,9 +41,9 @@
     function CargaDatos(){
         //Recuperamos los datos del querystring del URL para poder hacer las operaciones
         const urlParams = new URLSearchParams(window.location.search);
-        const authHeader = urlParams.get('authHeader');
-        const userName = urlParams.get('userName');
-        const userRole = urlParams.get('userRole');
+        authHeader = urlParams.get('authHeader');
+        userName = urlParams.get('userName');
+        userRole = urlParams.get('userRole');
 
         CargaProductos(authHeader);
         CargaPersonas(authHeader);
@@ -217,15 +216,15 @@
     //Funciones de los botones de details
 
     function DetailsProducto(name, birthDate, deathDate, imageUrl, wikiUrl, entities, persons){
-        location.replace("http://127.0.0.1:8000/webPage/details/details.html?name=" +name+ "&birthDate=" +birthDate+ "&deathDate=" +deathDate+ "&imageUrl=" +imageUrl+ "&wikiUrl=" +wikiUrl+ "&entities=" +entities+ "&persons=" +persons+ "&authHeader" +authHeader+ "&userName" +userName+ "&userRole" +userRole);
+        location.replace("http://127.0.0.1:8000/webPage/details/details.html?name=" +name+ "&birthDate=" +birthDate+ "&deathDate=" +deathDate+ "&imageUrl=" +imageUrl+ "&wikiUrl=" +wikiUrl+ "&entities=" +entities+ "&persons=" +persons+ "&authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
     }
 
     function DetailsPersona(name, birthDate, deathDate, imageUrl, wikiUrl, entities, products){
-        location.replace("http://127.0.0.1:8000/webPage/details/details.html?name=" +name+ "&birthDate=" +birthDate+ "&deathDate=" +deathDate+ "&imageUrl=" +imageUrl+ "&wikiUrl=" +wikiUrl+ "&entities=" +entities+ "&products=" +products+ "&authHeader" +authHeader+ "&userName" +userName+ "&userRole" +userRole);
+        location.replace("http://127.0.0.1:8000/webPage/details/details.html?name=" +name+ "&birthDate=" +birthDate+ "&deathDate=" +deathDate+ "&imageUrl=" +imageUrl+ "&wikiUrl=" +wikiUrl+ "&entities=" +entities+ "&products=" +products+ "&authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
     }
 
     function DetailsEntidad(name, birthDate, deathDate, imageUrl, wikiUrl, products, persons){
-        location.replace("http://127.0.0.1:8000/webPage/details/details.html?name=" +name+ "&birthDate=" +birthDate+ "&deathDate=" +deathDate+ "&imageUrl=" +imageUrl+ "&wikiUrl=" +wikiUrl+ "&products=" +products+ "&persons=" +persons+ "&authHeader" +authHeader+ "&userName" +userName+ "&userRole" +userRole);
+        location.replace("http://127.0.0.1:8000/webPage/details/details.html?name=" +name+ "&birthDate=" +birthDate+ "&deathDate=" +deathDate+ "&imageUrl=" +imageUrl+ "&wikiUrl=" +wikiUrl+ "&products=" +products+ "&persons=" +persons+ "&authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
     }
 
 </script>

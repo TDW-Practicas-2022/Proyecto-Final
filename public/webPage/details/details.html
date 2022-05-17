@@ -13,6 +13,7 @@
     <div class="cabecera-principal" id="cabecera_details">
     </div>
     <div id="div-botonVolver-details">
+    </div><div class= "div_info" id="div_info_usuario">
     </div>
     <div class="contenido">
         <div class="div_izquierda_details" id="div_informacion">
@@ -33,6 +34,12 @@
         const wikiUrl = urlParams.get('wikiUrl');
         const persons = urlParams.get('persons');
         const entities = urlParams.get('entities');
+        let authHeader = urlParams.get('authHeader');
+        let  userName = urlParams.get('userName');
+        let  userRole = urlParams.get('userRole');
+        console.log(authHeader);
+        console.log(userName);
+        console.log(userRole);
 
         let h1 = document.createElement("h1");
         let text_h1 = document.createTextNode("Anales de la Ciencia - "+name);
@@ -73,14 +80,19 @@
         iframe.width = "600";
         iframe.height = "600";
         document.getElementById("div_wiki").appendChild(iframe);
+
+        let p = document.createElement("p");
+        let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
+        p.appendChild(text);
+        document.getElementById("div_info_usuario").appendChild(p);
     }
 
     function Volver(){
         const urlParams = new URLSearchParams(window.location.search);
-        const authHeader = urlParams.get('authHeader');
-        const userName = urlParams.get('userName');
-        const userRole = urlParams.get('userRole');
-        location.replace("http://127.0.0.1:8000/webPage/readerSubsystem/reader.html?authHeader" +authHeader+ "&userName" +userName+ "&userRole" +userRole);
+        let authHeader = urlParams.get('authHeader');
+        let  userName = urlParams.get('userName');
+        let  userRole = urlParams.get('userRole');
+        location.replace("http://127.0.0.1:8000/webPage/readerSubsystem/reader.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
     }
 </script>
 </body>
