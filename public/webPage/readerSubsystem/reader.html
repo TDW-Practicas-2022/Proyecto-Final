@@ -15,8 +15,13 @@
     <div class="cabecera-principal">
         <h1>Anales de la Ciencia</h1>
     </div>
-    <div class="div-logout">
-        <input id="boton-logout" type="button" name="logout" value="Logout" onclick="Logout()" />
+    <div class="botones-readerPage">
+        <div>
+            <input id="boton-logout" type="button" name="logout" value="Logout" onclick="Logout()" />
+        </div>
+        <div>
+            <input id="boton-perfil-reader" type="button" name="Perfil" value="Perfil" onclick="Perfil()" />
+        </div>
     </div>
     <div class= "div_info" id="div_info_usuario">
     </div>
@@ -227,5 +232,10 @@
         location.replace("http://127.0.0.1:8000/webPage/details/details.html?name=" +name+ "&birthDate=" +birthDate+ "&deathDate=" +deathDate+ "&imageUrl=" +imageUrl+ "&wikiUrl=" +wikiUrl+ "&products=" +products+ "&persons=" +persons+ "&authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
     }
 
+    //Funcion para ir al perfil de usuario
+
+    function Perfil(){
+        location.replace("http://127.0.0.1:8000/webPage/readerSubsystem//perfil/perfilReader.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+    }
 </script>
 </body>

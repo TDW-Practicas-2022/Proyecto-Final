@@ -84,17 +84,21 @@
             };
         }
 
-        $.ajax({
-            type: "POST",
-            url: '/api/v1/persons',
-            headers: {"Authorization": authHeader},
-            data: persona,
-            // dataType: 'json',
-            success: function (data) {
-                console.log(data)
-                location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
-            }
-        })
+        if(persona === null){
+            alert("Ha ocurrido un problema, intentalo de nuevo.")
+        }else {
+            $.ajax({
+                type: "POST",
+                url: '/api/v1/persons',
+                headers: {"Authorization": authHeader},
+                data: persona,
+                // dataType: 'json',
+                success: function (data) {
+                    console.log(data)
+                    location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" + authHeader + "&userName=" + userName + "&userRole=" + userRole);
+                }
+            })
+        }
     }
 
     function Volver(){

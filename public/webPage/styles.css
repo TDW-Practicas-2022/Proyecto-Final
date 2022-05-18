@@ -2,7 +2,7 @@ body { background-color: #3B3B3B }
 
 p,li { color: #D38740 }
 
-h1, label, h4, h3 ,h2 {
+h1, label, h4, h3 ,h2, h5{
     color: #D38740;
     text-align: center;
 }
@@ -90,10 +90,15 @@ h1, label, h4, h3 ,h2 {
 /* Estilos de la página createProducto*/
 /* ####################################################*/
 
-.div-volver-crear-producto, .div-volver-crear-persona, .div-volver-crear-entidad, .div-volver-editar-entidad, .div-volver-editar-persona, .div-volver-editar-producto{
+.div-volver-crear-producto, .div-volver-crear-persona, .div-volver-crear-entidad, .div-volver-editar-entidad, .div-volver-editar-persona, .div-volver-editar-producto, .div-volver-perfil-reader{
     margin-top: 10px;
 }
 
 #div_formulario_crear, #div_formulario_editar{
     text-align: center;
+}
+
+.botones-readerPage{
+    display: flex;
+    margin-top: 10px;
 }

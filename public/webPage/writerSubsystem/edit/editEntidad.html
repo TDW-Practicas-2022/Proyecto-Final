@@ -53,6 +53,7 @@
     let authHeader = null
     let userName = null
     let userRole = null
+    let idEntidad = null
 
     function Carga(){
         //Recuperamos los datos del querystring del URL
@@ -60,6 +61,7 @@
         authHeader = urlParams.get('authHeader');
         userName = urlParams.get('userName');
         userRole = urlParams.get('userRole');
+        idEntidad = urlParams.get('idEntidad');
 
         let p = document.createElement("p");
         let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
@@ -85,21 +87,29 @@
         }
 
         $.ajax({
-            type: "POST",
-            url: '/api/v1/entities',
+            type: "GET",
+            url: '/api/v1/entities/'+idEntidad,
             headers: {"Authorization": authHeader},
-            data: entidad,
             // dataType: 'json',
             success: function (data) {
-                console.log(data)
-                location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+                $.ajax({
+                    type: "PUT",
+                    url: '/api/v1/entities/'+idEntidad,
+                    headers: {"Authorization": authHeader,"if-Match": getEtag()},
+                    data:entidad,
+                    // dataType: 'json',
+                    success: function (data) {
+                        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" + authHeader + "&userName=" + userName + "&userRole=" + userRole);
+                    }
+                })
             }
-        })
+        });
     }
 
     function Volver(){
         location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
     }
+
 </script>
 </body>
 </html>

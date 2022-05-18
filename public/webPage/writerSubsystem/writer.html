@@ -324,16 +324,16 @@
 
     //Funciones de los botones edit
 
-    function EditProducto(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editProducto.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+    function EditProducto(id){
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editProducto.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader+ "&idProducto=" +id);
     }
 
-    function EditPersona(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editPersona.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+    function EditPersona(id){
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editPersona.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader+ "&idPersona=" +id);
     }
 
-    function EditEntidad(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editEntidad.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+    function EditEntidad(id){
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editEntidad.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader+ "&idEntidad=" +id);
     }
 </script>
 </body>

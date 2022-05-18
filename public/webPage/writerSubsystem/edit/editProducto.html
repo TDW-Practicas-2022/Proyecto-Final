@@ -53,6 +53,8 @@
     let authHeader = null
     let userName = null
     let userRole = null
+    let idProducto = null
+    let etagString = null
 
     function Carga(){
         //Recuperamos los datos del querystring del URL
@@ -60,6 +62,7 @@
         authHeader = urlParams.get('authHeader');
         userName = urlParams.get('userName');
         userRole = urlParams.get('userRole');
+        idProducto = urlParams.get('idProducto');
 
         let p = document.createElement("p");
         let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
@@ -84,17 +87,54 @@
             };
         }
 
-        $.ajax({
-            type: "POST",
-            url: '/api/v1/products',
-            headers: {"Authorization": authHeader},
-            data: producto,
-            // dataType: 'json',
-            success: function (data) {
-                console.log(data)
-                location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+        //Para poder hacer un PUT necesitamos el Etag y este le conseguimos de la cabecera de respuesta de un GET a ese recurso en concreto
+
+        getEtag();
+
+        function getEtag() {
+            let request = new XMLHttpRequest();
+            request.open("GET", "http://127.0.0.1:8000/api/v1/products/" + idProducto, true);
+            request.send();
+
+            let arr = null;
+            request.onreadystatechange = function () {
+                if (this.readyState === this.HEADERS_RECEIVED) {
+
+                    // Get the raw header string
+                    let headers = request.getAllResponseHeaders();
+                    console.log(headers);
+                    // Convert the header string into an array
+                    // of individual headers
+                    arr = headers.trim().split(/[\r\n]+/);
+                    etagString = arr[7];
+                }
             }
-        })
+        }
+
+       if(etagString === null){
+            alert("No se ha podido obtener el Etag del producto, esto pasa a veces, intentalo de nuevo");
+       }else{
+           etagCheck = etagString;
+           getEtag();
+           if(etagString === etagCheck){
+               let parsedEtag = etagString;
+               parsedEtag = parsedEtag.substring(6);
+               console.log(parsedEtag);
+
+               $.ajax({
+                   type: "PUT",
+                   url: '/api/v1/products/' + idProducto,
+                   headers: {"Authorization": authHeader, "if-Match": parsedEtag},
+                   data: producto,
+                   // dataType: 'json',
+                   success: function (data) {
+                       location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" + authHeader + "&userName=" + userName + "&userRole=" + userRole);
+                   }
+               });
+           }else{
+               alert("No se ha podido obtener el Etag del producto, esto pasa a veces, intentalo de nuevo");
+           }
+       }
     }
 
     function Volver(){
