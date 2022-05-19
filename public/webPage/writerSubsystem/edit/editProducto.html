@@ -68,15 +68,26 @@
         let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
         p.appendChild(text);
         document.getElementById("div_info_usuario").appendChild(p);
+
+        getEtag();
     }
 
     function EditProduct(){
-        let producto = null;
+        let producto = {};
 
         rellenarProducto();
 
-        function rellenarProducto(){
-            producto = {
+        function rellenarProducto() {
+            if ($("#NombreProducto").val() != null) {
+                producto.name = $("#NombreProducto").val();
+            }
+            console.log($("#BirthDate").val());
+
+            if ($("#BirthDate").val() != null) {
+                producto.birthDate = $("#BirthDate").val();
+            }
+            console.log(producto)
+            /*producto = {
                 name: $("#NombreProducto").val(),
                 birthDate: $("#BirthDate").val(),
                 deathDate: $("#DeathDate").val(),
@@ -84,32 +95,11 @@
                 wikiUrl: $("#WikiUrl").val()
                 //persons: $("#Persons").val(),
                 //entities: $("#Entities").val()
-            };
+            };*/
         }
+
 
         //Para poder hacer un PUT necesitamos el Etag y este le conseguimos de la cabecera de respuesta de un GET a ese recurso en concreto
-
-        getEtag();
-
-        function getEtag() {
-            let request = new XMLHttpRequest();
-            request.open("GET", "http://127.0.0.1:8000/api/v1/products/" + idProducto, true);
-            request.send();
-
-            let arr = null;
-            request.onreadystatechange = function () {
-                if (this.readyState === this.HEADERS_RECEIVED) {
-
-                    // Get the raw header string
-                    let headers = request.getAllResponseHeaders();
-                    console.log(headers);
-                    // Convert the header string into an array
-                    // of individual headers
-                    arr = headers.trim().split(/[\r\n]+/);
-                    etagString = arr[7];
-                }
-            }
-        }
 
        if(etagString === null){
             alert("No se ha podido obtener el Etag del producto, esto pasa a veces, intentalo de nuevo");
@@ -140,6 +130,32 @@
     function Volver(){
         location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
     }
+
+    function getEtag() {
+        let request = new XMLHttpRequest();
+        request.open("GET", "http://127.0.0.1:8000/api/v1/products/" + idProducto, true);
+        request.send();
+
+        let arr = null;
+        request.onreadystatechange = function () {
+            if (this.readyState === this.HEADERS_RECEIVED) {
+
+                // Get the raw header string
+                let headers = request.getAllResponseHeaders();
+                // Convert the header string into an array
+                // of individual headers
+                arr = headers.trim().split(/[\r\n]+/);
+                let i = 0
+                while(i < arr.length){
+                    if(arr[i].substring(0,4) === "etag"){
+                        etagString = arr[i];
+                    }
+                    i += 1;
+                }
+            }
+        }
+    }
+
 </script>
 </body>
 </html>

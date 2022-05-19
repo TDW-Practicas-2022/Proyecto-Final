@@ -90,7 +90,7 @@ h1, label, h4, h3 ,h2, h5{
 /* Estilos de la página createProducto*/
 /* ####################################################*/
 
-.div-volver-crear-producto, .div-volver-crear-persona, .div-volver-crear-entidad, .div-volver-editar-entidad, .div-volver-editar-persona, .div-volver-editar-producto, .div-volver-perfil-reader{
+.div-volver-crear-producto, .div-volver-crear-persona, .div-volver-crear-entidad, .div-volver-editar-entidad, .div-volver-editar-persona, .div-volver-editar-producto, .div-volver-perfil-reader, .div-volver-perfil-writer{
     margin-top: 10px;
 }
 
@@ -98,7 +98,7 @@ h1, label, h4, h3 ,h2, h5{
     text-align: center;
 }
 
-.botones-readerPage{
+.botones-readerPage, .botones-writerPage{
     display: flex;
     margin-top: 10px;
 }
