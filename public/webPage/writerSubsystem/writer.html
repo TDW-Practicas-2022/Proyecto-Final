@@ -29,6 +29,7 @@
         <input type="button" name="crearProducto" value="Crear Producto" onclick="CreateProducto()" />
         <input type="button" name="crearPersona" value="Crear Persona" onclick="CreatePersona()" />
         <input type="button" name="crearEntidad" value="Crear Entidad" onclick="CreateEntidad()" />
+        <input type="button" name="gestionUsuarios" value="Gestionar Usuarios" onclick="GestionUsuarios()" />
     </div>
     <div class="contenido">
         <div class="div_izquierda" id="div_productos">
@@ -345,6 +346,12 @@
 
     function Perfil(){
         location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/perfil/perfilWriter.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+    }
+
+    //Funcion para ir a la gestion de usuarios
+
+    function GestionUsuarios(){
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/gestionUsers.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
     }
 </script>
 </body>

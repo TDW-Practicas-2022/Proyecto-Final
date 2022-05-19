@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Edit User</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Página de edición de un usuario">
+    <meta name="author" content="Alvaro Aviles Redondo - bp0259">
+    <meta name="author" content="Jesus Anton Diaz - bp0005">
+    <!--- estilos con CSS -->
+    <link rel="stylesheet" href="../../../styles.css">
+    <script src="https://unpkg.com/jquery@1"></script>
+</head>
+<body onload="Carga()">
+<div class="contenedor">
+    <div class="cabecera-principal">
+        <h1>Anales de la Ciencia - Edit usuario</h1>
+    </div>
+    <div class="div-volver-editar-usuario">
+        <input id="boton-volver" type="button" name="Volver" value="Volver" onclick="Volver()" />
+    </div>
+    <div id="div_info_usuario">
+    </div>
+    <div id="div_formulario_editar">
+        <form id="form_edit">
+            <label for="NombreUsuario">Nombre del usuario: </label>
+            <input id="NombreUsuario" type="text" name="NombreUsuario" placeholder="Nombre del usuario"/>
+            <br><br>
+            <label for="Email">Email: </label>
+            <input id="Email" type="text" name="Email" placeholder="Format: example@example.com"/>
+            <br><br>
+            <label for="Contraseña">Contraseña: </label>
+            <input id="Contraseña" type="password" name="Contraseña" placeholder="Contraseña"/>
+            <br><br>
+            <label for="Role">Rol: </label>
+            <input id="Role" type="text" name="ImageUrl" placeholder="reader/writer"/>
+            <br><br>
+            <input type="button" name="Edit User" value="Edit User" onclick="EditUsuario()" />
+        </form>
+    </div>
+    <!--<div class="contenido">
+     </div>-->
+</div>
+<script>
+    let authHeader = null
+    let userName = null
+    let userRole = null
+    let idUser = null
+    let etagString = null
+
+    function Carga(){
+        //Recuperamos los datos del querystring del URL
+        const urlParams = new URLSearchParams(window.location.search);
+        authHeader = urlParams.get('authHeader');
+        userName = urlParams.get('userName');
+        userRole = urlParams.get('userRole');
+        idUser = urlParams.get('idUser');
+
+        let p = document.createElement("p");
+        let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
+        p.appendChild(text);
+        document.getElementById("div_info_usuario").appendChild(p);
+
+        getEtag();
+    }
+
+    function EditUsuario(){
+        let producto = {};
+
+        rellenarProducto();
+
+        function rellenarProducto() {
+            /*producto = {
+                name: $("#NombreProducto").val(),
+                birthDate: $("#BirthDate").val(),
+                deathDate: $("#DeathDate").val(),
+                imageUrl: $("#ImageUrl").val(),
+                wikiUrl: $("#WikiUrl").val()
+                //persons: $("#Persons").val(),
+                //entities: $("#Entities").val()
+            };*/
+        }
+
+
+        //Para poder hacer un PUT necesitamos el Etag y este le conseguimos de la cabecera de respuesta de un GET a ese recurso en concreto
+
+        if(etagString === null){
+            alert("No se ha podido obtener el Etag del usuario, esto pasa a veces, intentalo de nuevo");
+        }else{
+            etagCheck = etagString;
+            getEtag();
+            if(etagString === etagCheck){
+                let parsedEtag = etagString;
+                parsedEtag = parsedEtag.substring(6);
+                console.log(parsedEtag);
+
+                $.ajax({
+                    type: "PUT",
+                    url: '/api/v1/users/' + idUser,
+                    headers: {"Authorization": authHeader, "if-Match": parsedEtag},
+                    data: producto,
+                    // dataType: 'json',
+                    success: function (data) {
+                        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/gestionUsers?authHeader=" + authHeader + "&userName=" + userName + "&userRole=" + userRole);
+                    }
+                });
+            }else{
+                alert("No se ha podido obtener el Etag del usuario, esto pasa a veces, intentalo de nuevo");
+            }
+        }
+    }
+
+    function Volver(){
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/gestionUsers.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+    }
+
+    function getEtag() {
+        let request = new XMLHttpRequest();
+        request.open("GET", "http://127.0.0.1:8000/api/v1/users/" + idUser, true);
+        request.send();
+
+        let arr = null;
+        request.onreadystatechange = function () {
+            if (this.readyState === this.HEADERS_RECEIVED) {
+
+                // Get the raw header string
+                let headers = request.getAllResponseHeaders();
+                // Convert the header string into an array
+                // of individual headers
+                arr = headers.trim().split(/[\r\n]+/);
+                let i = 0
+                while(i < arr.length){
+                    if(arr[i].substring(0,4) === "etag"){
+                        etagString = arr[i];
+                    }
+                    i += 1;
+                }
+            }
+        }
+    }
+
+</script>
+</body>
+</html>
