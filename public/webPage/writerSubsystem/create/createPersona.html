@@ -15,7 +15,7 @@
     <div class="cabecera-principal">
         <h1>Anales de la Ciencia - Crear persona</h1>
     </div>
-    <div class="div-volver-crear-persona">
+    <div class="div-volver">
         <input id="boton-volver" type="button" name="Volver" value="Volver" onclick="Volver()" />
     </div>
     <div id="div_info_usuario">
@@ -50,21 +50,15 @@
     </div>-->
 </div>
 <script>
-    let authHeader = null
-    let userName = null
-    let userRole = null
+    let userId = null
 
     function Carga(){
         //Recuperamos los datos del querystring del URL
         const urlParams = new URLSearchParams(window.location.search);
-        authHeader = urlParams.get('authHeader');
-        userName = urlParams.get('userName');
-        userRole = urlParams.get('userRole');
+        userId = urlParams.get('userId');
 
-        let p = document.createElement("p");
-        let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
-        p.appendChild(text);
-        document.getElementById("div_info_usuario").appendChild(p);
+        CargaInfoUsuario();
+
     }
 
     function CreatePerson(){
@@ -86,23 +80,40 @@
 
         if(persona === null){
             alert("Ha ocurrido un problema, intentalo de nuevo.")
-        }else {
+        }else{
             $.ajax({
                 type: "POST",
                 url: '/api/v1/persons',
-                headers: {"Authorization": authHeader},
+                headers: {"Authorization": localStorage.getItem('authHeader')},
                 data: persona,
                 // dataType: 'json',
                 success: function (data) {
                     console.log(data)
-                    location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" + authHeader + "&userName=" + userName + "&userRole=" + userRole);
+                    location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId=" +userId);
                 }
-            })
+            });
         }
     }
 
+    function CargaInfoUsuario(){
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/users/' + userId,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
+            // dataType: 'json',
+            success: function (data) {
+                userRole = data.user.role;
+
+                let p = document.createElement("p");
+                let text = document.createTextNode("User: " +data.user.username+ " - Role: " +data.user.role);
+                p.appendChild(text);
+                document.getElementById("div_info_usuario").appendChild(p);
+            }
+        });
+    }
+
     function Volver(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId=" +userId);
     }
 </script>
 </body>

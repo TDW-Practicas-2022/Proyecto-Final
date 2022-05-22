@@ -90,7 +90,7 @@ h1, label, h4, h3 ,h2, h5{
 /* Estilos de la página createProducto*/
 /* ####################################################*/
 
-.div-volver-crear-producto, .div-volver-crear-persona, .div-volver-crear-entidad, .div-volver-editar-entidad, .div-volver-editar-persona, .div-volver-editar-producto, .div-volver-perfil-reader, .div-volver-perfil-writer, .div-volver-gestion-usuarios, .div-volver-editar-usuario{
+.div-volver{
     margin-top: 10px;
 }
 
@@ -103,6 +103,6 @@ h1, label, h4, h3 ,h2, h5{
     margin-top: 10px;
 }
 
-#div-usuarios{
+#div-usuarios, #div_formulario_alta{
     text-align: center;
 }

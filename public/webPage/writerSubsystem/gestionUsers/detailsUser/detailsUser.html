@@ -25,32 +25,24 @@
     </div>
 </body>
 <script>
-    let authHeader = null
-    let userName = null
-    let userRole = null
-    let idUser = null
+    let idUsuarioDetalles = null
+    let userId = null
 
     function Carga(){
         //Recuperamos los datos del querystring del URL
         const urlParams = new URLSearchParams(window.location.search);
-        authHeader = urlParams.get('authHeader');
-        userName = urlParams.get('userName');
-        userRole = urlParams.get('userRole');
-        idUser = urlParams.get('idUser');
+        userId = urlParams.get('userId');
+        idUsuarioDetalles = urlParams.get('idUsuarioDetalles');
 
-        let p = document.createElement("p");
-        let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
-        p.appendChild(text);
-        document.getElementById("div_info_usuario").appendChild(p);
-
+        CargaInfoUsuario();
         MostrarInfoUsuario();
     }
 
     function MostrarInfoUsuario(){
         $.ajax({
             type: "GET",
-            url: '/api/v1/users/'+idUser,
-            headers: {"Authorization": authHeader},
+            url: '/api/v1/users/'+ idUsuarioDetalles,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
             // dataType: 'json',
             success: function (data) {
                 let h3 = document.createElement("h3");
@@ -82,7 +74,22 @@
     }
 
     function Volver(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/gestionUsers.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/gestionUsers.html?userId="+ userId);
+    }
+
+    function CargaInfoUsuario(){
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/users/' + userId,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
+            // dataType: 'json',
+            success: function (data) {
+                let p = document.createElement("p");
+                let text = document.createTextNode("User: " +data.user.username+ " - Role: " +data.user.role);
+                p.appendChild(text);
+                document.getElementById("div_info_usuario").appendChild(p);
+            }
+        });
     }
 </script>
 </html>

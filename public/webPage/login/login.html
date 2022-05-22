@@ -38,17 +38,12 @@
     </div>
 </div>
 <script>
-    function VolverPaginaPresentacion(){
-        location.replace("http://127.0.0.1:8000/webPage/index.html");
-    }
-
-    function Register(){
-        location.replace("http://127.0.0.1:8000/webPage/register/register.html");
-    }
-
     let authHeader = null;
     let formData = null;
     let userName = null;
+    let userId = null;
+    let userRole = null;
+
     $("#btn-login").click(function(){
         formData = $("#form-login").serializeArray()
         userName = formData[0].value
@@ -58,7 +53,8 @@
             null
         ).success(function (data, textStatus, request) {
             authHeader = request.getResponseHeader('Authorization');
-            AccessFilter(authHeader,userName);
+            localStorage.setItem('authHeader', authHeader);
+            AccessFilter(userName);
             console.log(data)
         }).fail(function (xhr) {
             if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -68,29 +64,39 @@
         });
     });
 
-    function AccessFilter(authHeader,userName){
+    function AccessFilter(userName){
         let userRole = null;
         $.ajax({
             type: "GET",
             url: '/api/v1/users',
-            headers: {"Authorization": authHeader},
+            headers: {"Authorization": localStorage.getItem('authHeader')},
             // dataType: 'json',
             success: function (data) {
                 let i = 0
                 while (i < data.users.length){
                     if(data.users[i].user.username === userName) {
-                        userRole = data.users[i].user.role
+                        userId = data.users[i].user.id;
+                        userRole = data.users[i].user.role;
                     }
                     i += 1;
                 }
                 //Usamos querystrings para pasar datos entre diferentes archivos HTMl
                 if(userRole === "writer"){
-                    location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+                    location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId=" +userId);
                 }else{
-                    location.replace("http://127.0.0.1:8000/webPage/readerSubsystem/reader.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+                    location.replace("http://127.0.0.1:8000/webPage/readerSubsystem/reader.html?userId=" +userId);
                 }
             }
         })
     }
+
+    function VolverPaginaPresentacion(){
+        location.replace("http://127.0.0.1:8000/webPage/index.html");
+    }
+
+    function Register(){
+        location.replace("http://127.0.0.1:8000/webPage/register/register.html");
+    }
+
 </script>
 </body>

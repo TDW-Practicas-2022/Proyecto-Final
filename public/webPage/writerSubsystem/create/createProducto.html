@@ -15,7 +15,7 @@
     <div class="cabecera-principal">
         <h1>Anales de la Ciencia - Crear producto</h1>
     </div>
-    <div class="div-volver-crear-producto">
+    <div class="div-volver">
         <input id="boton-volver" type="button" name="Volver" value="Volver" onclick="Volver()" />
     </div>
     <div id="div_info_usuario">
@@ -50,21 +50,14 @@
      </div>-->
 </div>
 <script>
-    let authHeader = null
-    let userName = null
-    let userRole = null
+    let userId = null
 
     function Carga(){
         //Recuperamos los datos del querystring del URL
         const urlParams = new URLSearchParams(window.location.search);
-        authHeader = urlParams.get('authHeader');
-        userName = urlParams.get('userName');
-        userRole = urlParams.get('userRole');
+        userId = urlParams.get('userId');
 
-        let p = document.createElement("p");
-        let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
-        p.appendChild(text);
-        document.getElementById("div_info_usuario").appendChild(p);
+        CargaInfoUsuario();
     }
 
      function CreateProduct(){
@@ -72,37 +65,52 @@
 
          rellenarProducto();
 
-         function rellenarProducto(){
-             producto = {
-                 name: $("#NombreProducto").val(),
-                 birthDate: $("#BirthDate").val(),
-                 deathDate: $("#DeathDate").val(),
-                 imageUrl: $("#ImageUrl").val(),
-                 wikiUrl: $("#WikiUrl").val()
-                 //persons: $("#Persons").val(),
-                 //entities: $("#Entities").val()
-             };
-         }
-
          if(producto === null){
              alert("Ha ocurrido un problema, intentalo de nuevo.")
          }else{
              $.ajax({
                  type: "POST",
                  url: '/api/v1/products',
-                 headers: {"Authorization": authHeader},
+                 headers: {"Authorization": localStorage.getItem('authHeader')},
                  data: producto,
                  // dataType: 'json',
                  success: function (data) {
                      console.log(data)
-                     location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+                     location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId=" +userId);
                  }
              })
          }
      }
 
+    function CargaInfoUsuario(){
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/users/' + userId,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
+            // dataType: 'json',
+            success: function (data) {
+                let p = document.createElement("p");
+                let text = document.createTextNode("User: " +data.user.username+ " - Role: " +data.user.role);
+                p.appendChild(text);
+                document.getElementById("div_info_usuario").appendChild(p);
+            }
+        });
+    }
+
+    function rellenarProducto(){
+        producto = {
+            name: $("#NombreProducto").val(),
+            birthDate: $("#BirthDate").val(),
+            deathDate: $("#DeathDate").val(),
+            imageUrl: $("#ImageUrl").val(),
+            wikiUrl: $("#WikiUrl").val()
+            //persons: $("#Persons").val(),
+            //entities: $("#Entities").val()
+        };
+    }
+
     function Volver(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId=" +userId);
     }
 </script>
 </body>

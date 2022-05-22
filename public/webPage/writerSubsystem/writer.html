@@ -41,9 +41,7 @@
     </div>
 </div>
 <script>
-    let authHeader = null
-    let userName = null
-    let userRole = null
+    let userId = null
 
     function Logout(){
         location.replace("http://127.0.0.1:8000/webPage/index.html")
@@ -52,22 +50,20 @@
     function CargaDatos(){
         //Recuperamos los datos del querystring del URL para poder hacer las operaciones
         const urlParams = new URLSearchParams(window.location.search);
-        authHeader = urlParams.get('authHeader');
-        userName = urlParams.get('userName');
-        userRole = urlParams.get('userRole');
+        userId = urlParams.get('userId');
 
-        CargaProductos(authHeader);
-        CargaPersonas(authHeader);
-        CargaEntidades(authHeader);
-        CargaInfoUsuario(authHeader,userName, userRole);
+        CargaInfoUsuario();
+        CargaProductos();
+        CargaPersonas();
+        CargaEntidades();
     }
 
-    function CargaProductos(authHeader){
+    function CargaProductos(){
         //Hacemos una peticion GET a la ruta de los productos y trabajamos insertando en el DOM los elementos
         $.ajax({
             type: "GET",
             url: '/api/v1/products',
-            headers: {"Authorization": authHeader},
+            headers: {"Authorization": localStorage.getItem('authHeader')},
             // dataType: 'json',
             success: function (data) {
                 let i = 0
@@ -86,7 +82,7 @@
                     i += 1;
                 }
             }
-        })
+        });
     }
 
     function MostrarProducto(item){
@@ -107,7 +103,7 @@
         let detailsButton = document.createElement("button");
         detailsButton.name = "View";
         detailsButton.textContent = "View";
-        detailsButton.setAttribute("onclick", "DetailsProducto(\""+item.name+"\",\""+item.birthDate+"\",\""+item.deathDate+"\",\""+item.imageUrl+"\",\""+item.wikiUrl+"\",\""+item.entities+"\",\""+item.persons+"\")")
+        detailsButton.setAttribute("onclick", "DetailsProducto("+item.id+")")
 
         image.src=item.imageUrl;
         image.className="imageProducto"
@@ -125,12 +121,12 @@
         document.getElementById("div_productos").appendChild(producto);
     }
 
-    function CargaPersonas(authHeader){
+    function CargaPersonas(){
         //Hacemos una peticion GET a la ruta de los personas y trabajamos insertando en el DOM los elementos
         $.ajax({
             type: "GET",
             url: '/api/v1/persons',
-            headers: {"Authorization": authHeader},
+            headers: {"Authorization": localStorage.getItem('authHeader')},
             // dataType: 'json',
             success: function (data) {
                 let i = 0
@@ -170,7 +166,7 @@
         let detailsButton = document.createElement("button");
         detailsButton.name = "View";
         detailsButton.textContent = "View";
-        detailsButton.setAttribute("onclick", "DetailsPersona(\""+item.name+"\",\""+item.birthDate+"\",\""+item.deathDate+"\",\""+item.imageUrl+"\",\""+item.wikiUrl+"\",\""+item.entities+"\",\""+item.persons+"\")")
+        detailsButton.setAttribute("onclick", "DetailsPersona("+item.id+")")
 
         image.src=item.imageUrl;
         image.className="imagePersona"
@@ -188,12 +184,12 @@
         document.getElementById("div_personas").appendChild(persona);
     }
 
-    function CargaEntidades(authHeader){
+    function CargaEntidades(){
         //Hacemos una peticion GET a la ruta de los entidades y trabajamos insertando en el DOM los elementos
         $.ajax({
             type: "GET",
             url: '/api/v1/entities',
-            headers: {"Authorization": authHeader},
+            headers: {"Authorization": localStorage.getItem('authHeader')},
             // dataType: 'json',
             success: function (data) {
                 let i = 0
@@ -233,7 +229,7 @@
         let detailsButton = document.createElement("button");
         detailsButton.name = "View";
         detailsButton.textContent = "View";
-        detailsButton.setAttribute("onclick", "DetailsEntidad(\""+item.name+"\",\""+item.birthDate+"\",\""+item.deathDate+"\",\""+item.imageUrl+"\",\""+item.wikiUrl+"\",\""+item.entities+"\",\""+item.persons+"\")")
+        detailsButton.setAttribute("onclick", "DetailsEntidad("+item.id+")")
 
         image.src=item.imageUrl;
         image.className="imageEntidad"
@@ -251,39 +247,49 @@
         document.getElementById("div_entidades").appendChild(entidad);
     }
 
-    function CargaInfoUsuario(authHeader, userName, userRole){
-        let p = document.createElement("p");
-        let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
-        p.appendChild(text);
-        document.getElementById("div_info_usuario").appendChild(p);
+    function CargaInfoUsuario(){
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/users/' + userId,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
+            // dataType: 'json',
+            success: function (data) {
+                userRole = data.user.role;
+
+                let p = document.createElement("p");
+                let text = document.createTextNode("User: " +data.user.username+ " - Role: " +data.user.role);
+                p.appendChild(text);
+                document.getElementById("div_info_usuario").appendChild(p);
+            }
+        });
     }
 
     //Funciones de los botones de details
 
-    function DetailsProducto(name, birthDate, deathDate, imageUrl, wikiUrl, entities, persons){
-        location.replace("http://127.0.0.1:8000/webPage/details/details.html?name=" +name+ "&birthDate=" +birthDate+ "&deathDate=" +deathDate+ "&imageUrl=" +imageUrl+ "&wikiUrl=" +wikiUrl+ "&entities=" +entities+ "&persons=" +persons+ "&authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+    function DetailsProducto(id){
+        location.replace("http://127.0.0.1:8000/webPage/details/detailsProducto.html?userId="+ userId + "&idProducto=" + id);
     }
 
-    function DetailsPersona(name, birthDate, deathDate, imageUrl, wikiUrl, entities, products){
-        location.replace("http://127.0.0.1:8000/webPage/details/details.html?name=" +name+ "&birthDate=" +birthDate+ "&deathDate=" +deathDate+ "&imageUrl=" +imageUrl+ "&wikiUrl=" +wikiUrl+ "&entities=" +entities+ "&products=" +products+ "&authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+    function DetailsPersona(id){
+        location.replace("http://127.0.0.1:8000/webPage/details/detailsPersona.html?userId="+ userId + "&idPersona=" + id);
     }
 
-    function DetailsEntidad(name, birthDate, deathDate, imageUrl, wikiUrl, products, persons){
-        location.replace("http://127.0.0.1:8000/webPage/details/details.html?name=" +name+ "&birthDate=" +birthDate+ "&deathDate=" +deathDate+ "&imageUrl=" +imageUrl+ "&wikiUrl=" +wikiUrl+ "&products=" +products+ "&persons=" +persons+ "&authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+    function DetailsEntidad(id){
+        location.replace("http://127.0.0.1:8000/webPage/details/detailsEntidad.html?userId="+ userId + "&idEntidad=" + id);
     }
 
     //Funciones de los botones crear
 
     function CreateProducto(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/create/createProducto.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/create/createProducto.html?userId="+userId);
     }
 
     function CreatePersona(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/create/createPersona.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/create/createPersona.html?userId="+userId);
     }
 
     function CreateEntidad(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/create/createEntidad.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/create/createEntidad.html?userId="+userId);
     }
 
     //Funciones de los botones delete
@@ -293,11 +299,11 @@
         $.ajax({
             type: "DELETE",
             url: '/api/v1/products/'+id,
-            headers: {"Authorization": authHeader},
+            headers: {"Authorization": localStorage.getItem('authHeader')},
             // dataType: 'json',
             success: function (data) {
                 console.log(data);
-                location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+                location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId="+userId);
             }
         })
     }
@@ -306,11 +312,11 @@
         $.ajax({
             type: "DELETE",
             url: '/api/v1/persons/'+id,
-            headers: {"Authorization": authHeader},
+            headers: {"Authorization": localStorage.getItem('authHeader')},
             // dataType: 'json',
             success: function (data) {
                 console.log(data);
-                location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+                location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId="+userId);
             }
         })
     }
@@ -319,11 +325,11 @@
         $.ajax({
             type: "DELETE",
             url: '/api/v1/entities/'+id,
-            headers: {"Authorization": authHeader},
+            headers: {"Authorization": localStorage.getItem('authHeader')},
             // dataType: 'json',
             success: function (data) {
                 console.log(data);
-                location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+                location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId="+userId);
             }
         })
     }
@@ -331,27 +337,27 @@
     //Funciones de los botones edit
 
     function EditProducto(id){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editProducto.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader+ "&idProducto=" +id);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editProducto.html?userId=" +userId+ "&idProducto=" + id);
     }
 
     function EditPersona(id){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editPersona.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader+ "&idPersona=" +id);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editPersona.html?userId=" +userId+ "&idPersona=" + id);
     }
 
     function EditEntidad(id){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editEntidad.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader+ "&idEntidad=" +id);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/edit/editEntidad.html?userId=" +userId+ "&idEntidad=" + id);
     }
 
     //Funcion para ir al perfil del usuario
 
     function Perfil(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/perfil/perfilWriter.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/perfil/perfilWriter.html?userId=" +userId);
     }
 
     //Funcion para ir a la gestion de usuarios
 
     function GestionUsuarios(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/gestionUsers.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/gestionUsers.html?userId=" +userId);
     }
 </script>
 </body>

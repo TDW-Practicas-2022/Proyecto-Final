@@ -22,6 +22,7 @@
     </div>
     <div id="div_formulario_editar">
         <form id="form_edit">
+            <h3>Modifique los campos que desee:</h3>
             <label for="NombreProducto">Nombre del producto: </label>
             <input id="NombreProducto" type="text" name="NombreProducto" placeholder="Nombre del producto"/>
             <br><br>
@@ -50,44 +51,28 @@
      </div>-->
 </div>
 <script>
-    let authHeader = null
-    let userName = null
-    let userRole = null
+    let userId = null
     let idProducto = null
     let etagString = null
 
     function Carga(){
         //Recuperamos los datos del querystring del URL
         const urlParams = new URLSearchParams(window.location.search);
-        authHeader = urlParams.get('authHeader');
-        userName = urlParams.get('userName');
-        userRole = urlParams.get('userRole');
+        userId = urlParams.get('userId');
         idProducto = urlParams.get('idProducto');
 
-        let p = document.createElement("p");
-        let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
-        p.appendChild(text);
-        document.getElementById("div_info_usuario").appendChild(p);
-
+        CargaInfoUsuario()
         getEtag();
+        RellenarForm();
     }
 
-    function EditProduct(){
+    function EditProduct() {
         let producto = {};
 
         rellenarProducto();
 
         function rellenarProducto() {
-            if ($("#NombreProducto").val() != null) {
-                producto.name = $("#NombreProducto").val();
-            }
-            console.log($("#BirthDate").val());
-
-            if ($("#BirthDate").val() != null) {
-                producto.birthDate = $("#BirthDate").val();
-            }
-            console.log(producto)
-            /*producto = {
+            producto = {
                 name: $("#NombreProducto").val(),
                 birthDate: $("#BirthDate").val(),
                 deathDate: $("#DeathDate").val(),
@@ -95,40 +80,34 @@
                 wikiUrl: $("#WikiUrl").val()
                 //persons: $("#Persons").val(),
                 //entities: $("#Entities").val()
-            };*/
+            };
         }
 
 
         //Para poder hacer un PUT necesitamos el Etag y este le conseguimos de la cabecera de respuesta de un GET a ese recurso en concreto
 
-       if(etagString === null){
+        if (etagString === null) {
             alert("No se ha podido obtener el Etag del producto, esto pasa a veces, intentalo de nuevo");
-       }else{
-           etagCheck = etagString;
-           getEtag();
-           if(etagString === etagCheck){
-               let parsedEtag = etagString;
-               parsedEtag = parsedEtag.substring(6);
-               console.log(parsedEtag);
+        } else {
+            let parsedEtag = etagString;
+            parsedEtag = parsedEtag.substring(6);
+            console.log(parsedEtag);
 
-               $.ajax({
-                   type: "PUT",
-                   url: '/api/v1/products/' + idProducto,
-                   headers: {"Authorization": authHeader, "if-Match": parsedEtag},
-                   data: producto,
-                   // dataType: 'json',
-                   success: function (data) {
-                       location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" + authHeader + "&userName=" + userName + "&userRole=" + userRole);
-                   }
-               });
-           }else{
-               alert("No se ha podido obtener el Etag del producto, esto pasa a veces, intentalo de nuevo");
-           }
-       }
+            $.ajax({
+                type: "PUT",
+                url: '/api/v1/products/' + idProducto,
+                headers: {"Authorization": localStorage.getItem('authHeader') , "if-Match": parsedEtag},
+                data: producto,
+                // dataType: 'json',
+                success: function (data) {
+                    location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId="+ userId);
+                }
+            });
+        }
     }
 
     function Volver(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId="+ userId);
     }
 
     function getEtag() {
@@ -154,6 +133,39 @@
                 }
             }
         }
+    }
+
+    function RellenarForm(){
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/products/'+idProducto,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
+            // dataType: 'json',
+            success: function (data) {
+                $("#NombreProducto").val(data.product.name);
+                $("#BirthDate").val(data.product.birthDate)
+                $("#DeathDate").val(data.product.deathDate)
+                $("#ImageUrl").val(data.product.imageUrl)
+                $("#WikiUrl").val(data.product.wikiUrl)
+            }
+        })
+    }
+
+    function CargaInfoUsuario(){
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/users/' + userId,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
+            // dataType: 'json',
+            success: function (data) {
+                userRole = data.user.role;
+
+                let p = document.createElement("p");
+                let text = document.createTextNode("User: " +data.user.username+ " - Role: " +data.user.role);
+                p.appendChild(text);
+                document.getElementById("div_info_usuario").appendChild(p);
+            }
+        });
     }
 
 </script>

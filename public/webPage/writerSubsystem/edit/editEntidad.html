@@ -15,13 +15,14 @@
     <div class="cabecera-principal">
         <h1>Anales de la Ciencia - Editar entidad</h1>
     </div>
-    <div class="div-volver-editar-entidad">
+    <div class="div-volver">
         <input id="boton-volver" type="button" name="Volver" value="Volver" onclick="Volver()" />
     </div>
     <div id="div_info_usuario">
     </div>
     <div id="div_formulario_editar">
         <form id="form_edit">
+            <h3>Modifique los campos que desee:</h3>
             <label for="NombreEntidad">Nombre de la entidad: </label>
             <input id="NombreEntidad" type="text" name="NombreEntidad" placeholder="Nombre de la entidad"/>
             <br><br>
@@ -43,38 +44,34 @@
             <label for="Entities">Entities: </label>
             <input id="Entities" type="text" name="Entities" placeholder="Ej: [3,5,32]"/>
             <br><br>-->
-            <input type="button" name="Create Entity" value="Create Entity" onclick="EditEntity()" />
+            <input type="button" name="Edit Entity" value="Edit Entity" onclick="EditEntity()" />
         </form>
     </div>
     <!--<div class="contenido">
     </div>-->
 </div>
 <script>
-    let authHeader = null
-    let userName = null
-    let userRole = null
+    let userId = null
     let idEntidad = null
+    let etagString = null
 
     function Carga(){
         //Recuperamos los datos del querystring del URL
         const urlParams = new URLSearchParams(window.location.search);
-        authHeader = urlParams.get('authHeader');
-        userName = urlParams.get('userName');
-        userRole = urlParams.get('userRole');
+        userId = urlParams.get('userId');
         idEntidad = urlParams.get('idEntidad');
 
-        let p = document.createElement("p");
-        let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
-        p.appendChild(text);
-        document.getElementById("div_info_usuario").appendChild(p);
+        CargaInfoUsuario()
+        getEtag();
+        RellenarForm();
     }
 
-    function EditEntity(){
-        let entidad = null;
+    function EditEntity() {
+        let entidad = {};
 
         rellenarEntidad();
 
-        function rellenarEntidad(){
+        function rellenarEntidad() {
             entidad = {
                 name: $("#NombreEntidad").val(),
                 birthDate: $("#BirthDate").val(),
@@ -86,30 +83,90 @@
             };
         }
 
-        $.ajax({
-            type: "GET",
-            url: '/api/v1/entities/'+idEntidad,
-            headers: {"Authorization": authHeader},
-            // dataType: 'json',
-            success: function (data) {
-                $.ajax({
-                    type: "PUT",
-                    url: '/api/v1/entities/'+idEntidad,
-                    headers: {"Authorization": authHeader,"if-Match": getEtag()},
-                    data:entidad,
-                    // dataType: 'json',
-                    success: function (data) {
-                        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" + authHeader + "&userName=" + userName + "&userRole=" + userRole);
-                    }
-                })
-            }
-        });
+
+        //Para poder hacer un PUT necesitamos el Etag y este le conseguimos de la cabecera de respuesta de un GET a ese recurso en concreto
+
+        if (etagString === null) {
+            alert("No se ha podido obtener el Etag del producto, esto pasa a veces, intentalo de nuevo");
+        } else {
+            let parsedEtag = etagString;
+            parsedEtag = parsedEtag.substring(6);
+            console.log(parsedEtag);
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/v1/entities/' + idEntidad,
+                headers: {"Authorization": localStorage.getItem('authHeader') , "if-Match": parsedEtag},
+                data: entidad,
+                // dataType: 'json',
+                success: function (data) {
+                    location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId="+ userId);
+                }
+            });
+        }
     }
 
     function Volver(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId="+ userId);
     }
 
+    function getEtag() {
+        let request = new XMLHttpRequest();
+        request.open("GET", "http://127.0.0.1:8000/api/v1/entities/" + idEntidad, true);
+        request.send();
+
+        let arr = null;
+        request.onreadystatechange = function () {
+            if (this.readyState === this.HEADERS_RECEIVED) {
+
+                // Get the raw header string
+                let headers = request.getAllResponseHeaders();
+                // Convert the header string into an array
+                // of individual headers
+                arr = headers.trim().split(/[\r\n]+/);
+                let i = 0
+                while(i < arr.length){
+                    if(arr[i].substring(0,4) === "etag"){
+                        etagString = arr[i];
+                    }
+                    i += 1;
+                }
+            }
+        }
+    }
+
+    function RellenarForm(){
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/entities/'+idEntidad,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
+            // dataType: 'json',
+            success: function (data) {
+                $("#NombreEntidad").val(data.entity.name);
+                $("#BirthDate").val(data.entity.birthDate)
+                $("#DeathDate").val(data.entity.deathDate)
+                $("#ImageUrl").val(data.entity.imageUrl)
+                $("#WikiUrl").val(data.entity.wikiUrl)
+            }
+        })
+    }
+
+    function CargaInfoUsuario(){
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/users/' + userId,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
+            // dataType: 'json',
+            success: function (data) {
+                userRole = data.user.role;
+
+                let p = document.createElement("p");
+                let text = document.createTextNode("User: " +data.user.username+ " - Role: " +data.user.role);
+                p.appendChild(text);
+                document.getElementById("div_info_usuario").appendChild(p);
+            }
+        });
+    }
 </script>
 </body>
 </html>

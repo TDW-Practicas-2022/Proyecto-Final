@@ -15,8 +15,9 @@
     <div class="cabecera-principal">
         <h1>Anales de la Ciencia - Gestion de Usuarios</h1>
     </div>
-    <div class="div-volver-gestion-usuarios">
+    <div class="div-volver">
         <input id="boton-volver" type="button" name="Volver" value="Volver" onclick="Volver()" />
+        <input id="boton-pending" type="button" name="Solicitudes" value="Gestionar solicitudes" onclick="GestionSolicitudes()" />
     </div>
     <div id="div_info_usuario">
     </div>
@@ -25,22 +26,15 @@
 </div>
 </body>
 <script>
-    let authHeader = null
+    let userId = null
     let userName = null
-    let userRole = null
 
     function Carga(){
         //Recuperamos los datos del querystring del URL
         const urlParams = new URLSearchParams(window.location.search);
-        authHeader = urlParams.get('authHeader');
-        userName = urlParams.get('userName');
-        userRole = urlParams.get('userRole');
+        userId = urlParams.get('userId');
 
-        let p = document.createElement("p");
-        let text = document.createTextNode("User: " +userName+ " - Role: " +userRole);
-        p.appendChild(text);
-        document.getElementById("div_info_usuario").appendChild(p);
-
+        CargaInfoUsuario();
         MostrarUsuarios();
     }
 
@@ -48,13 +42,13 @@
         $.ajax({
             type: "GET",
             url: '/api/v1/users',
-            headers: {"Authorization": authHeader},
+            headers: {"Authorization": localStorage.getItem('authHeader')},
             // dataType: 'json',
             success: function (data) {
                 console.log(data);
                 let i = 0
                 while (i < data.users.length) {
-                    if (data.users[i].user.username !== userName) {
+                    if (data.users[i].user.id != userId) {
                         let p = document.createElement("p");
                         let text = document.createTextNode("Id: "+data.users[i].user.id+" - Username: "+data.users[i].user.username +" ");
                         p.appendChild(text);
@@ -90,25 +84,44 @@
         $.ajax({
             type: "DELETE",
             url: '/api/v1/users/'+id,
-            headers: {"Authorization": authHeader},
+            headers: {"Authorization": localStorage.getItem('authHeader')},
             // dataType: 'json',
             success: function (data) {
                 console.log(data);
-                location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/gestionUsers.html?userName=" +userName+ "&userRole=" +userRole+ "&authHeader=" +authHeader);
+                location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/gestionUsers.html?userId="+ userId);
             }
         })
     }
 
     function DetailsUser(id){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/detailsUser/detailsUser.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole + "&idUser=" +id);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/detailsUser/detailsUser.html?userId="+ userId + "&idUsuarioDetalles=" +id);
     }
 
     function EditUser(id){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/editUser/editUser.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole + "&idUser=" +id);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/editUser/editUser.html?userId="+ userId + "&idUsuarioEditar=" +id);
     }
 
     function Volver(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId="+ userId);
+    }
+
+    function GestionSolicitudes(){
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/gestionUsers/pendingUsers/pendingUsers.html?userId="+ userId);
+    }
+
+    function CargaInfoUsuario(){
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/users/' + userId,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
+            // dataType: 'json',
+            success: function (data) {
+                let p = document.createElement("p");
+                let text = document.createTextNode("User: " +data.user.username+ " - Role: " +data.user.role);
+                p.appendChild(text);
+                document.getElementById("div_info_usuario").appendChild(p);
+            }
+        });
     }
 </script>
 </html>

@@ -7,7 +7,7 @@
   <meta name="author" content="Alvaro Aviles Redondo - bp0259">
   <meta name="author" content="Jesus Anton Diaz - bp0005">
   <!--- estilos con CSS -->
-  <link rel="stylesheet" href="../../../styles.css">
+  <link rel="stylesheet" href="../../styles.css">
   <script src="https://unpkg.com/jquery@1"></script>
 </head>
 <body onload="CargaDatosReader()">
@@ -15,39 +15,31 @@
   <div class="cabecera-principal">
     <h1>Anales de la Ciencia - Perfil de usuario</h1>
   </div>
-  <div class="div-volver-perfil-reader">
+  <div class="div-volver">
     <input id="boton-volver" type="button" name="Volver" value="Volver" onclick="Volver()" />
+  </div>
+  <div class= "div_info" id="div_info_usuario">
   </div>
   <div class="datos-reader" id="datos-reader">
   </div>
 </div>
 <script>
-  let authHeader = null
-  let userName = null
-  let userRole = null
-  let usuario = null
+  let userId = null
 
   function CargaDatosReader(){
     //Recuperamos los datos del querystring del URL para poder hacer las operaciones
     const urlParams = new URLSearchParams(window.location.search);
-    authHeader = urlParams.get('authHeader');
-    userName = urlParams.get('userName');
-    userRole = urlParams.get('userRole');
+    userId= urlParams.get('userId');
+
+    CargaInfoUsuario();
 
     $.ajax({
       type: "GET",
-      url: '/api/v1/users',
-      headers: {"Authorization": authHeader},
+      url: '/api/v1/users/' +userId,
+      headers: {"Authorization": localStorage.getItem('authHeader')},
       // dataType: 'json',
       success: function (data) {
-        let i = 0
-        while (i < data.users.length){
-          if(data.users[i].user.username === userName) {
-            usuario = data.users[i].user
-          }
-          i += 1;
-        }
-        MostrarDatosUsuario(usuario);
+        MostrarDatosUsuario(data.user);
       }
     })
   }
@@ -86,8 +78,23 @@
     document.getElementById("datos-reader").appendChild(rolUsuario);
   }
 
+  function CargaInfoUsuario(){
+    $.ajax({
+      type: "GET",
+      url: '/api/v1/users/' + userId,
+      headers: {"Authorization": localStorage.getItem('authHeader')},
+      // dataType: 'json',
+      success: function (data) {
+        let p = document.createElement("p");
+        let text = document.createTextNode("User: " +data.user.username+ " - Role: " +data.user.role);
+        p.appendChild(text);
+        document.getElementById("div_info_usuario").appendChild(p);
+      }
+    });
+  }
+
   function Volver(){
-    location.replace("http://127.0.0.1:8000/webPage/readerSubsystem/reader.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+    location.replace("http://127.0.0.1:8000/webPage/readerSubsystem/reader.html?userId=" +userId);
   }
 
 </script>

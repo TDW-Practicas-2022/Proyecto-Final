@@ -15,38 +15,29 @@
     <div class="cabecera-principal">
         <h1>Anales de la Ciencia - Perfil de usuario</h1>
     </div>
-    <div class="div-volver-perfil-writer">
+    <div class="div-volver">
         <input id="boton-volver" type="button" name="Volver" value="Volver" onclick="Volver()" />
+        <input id="boton-editarperfil" type="button" name="Editar Perfil" value="Editar Perfil" onclick="EditarPerfil()" />
     </div>
     <div class="datos-writer" id="datos-writer">
     </div>
 </div>
 <script>
-    let authHeader = null
-    let userName = null
-    let userRole = null
+    let userId = null
     let usuario = null
 
     function CargaDatosWriter(){
         //Recuperamos los datos del querystring del URL para poder hacer las operaciones
         const urlParams = new URLSearchParams(window.location.search);
-        authHeader = urlParams.get('authHeader');
-        userName = urlParams.get('userName');
-        userRole = urlParams.get('userRole');
+        userId = urlParams.get('userId');
 
         $.ajax({
             type: "GET",
-            url: '/api/v1/users',
-            headers: {"Authorization": authHeader},
+            url: '/api/v1/users/' +userId,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
             // dataType: 'json',
             success: function (data) {
-                let i = 0
-                while (i < data.users.length){
-                    if(data.users[i].user.username === userName) {
-                        usuario = data.users[i].user
-                    }
-                    i += 1;
-                }
+                usuario = data.user
                 MostrarDatosUsuario(usuario);
             }
         })
@@ -87,9 +78,12 @@
     }
 
     function Volver(){
-        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?authHeader=" +authHeader+ "&userName=" +userName+ "&userRole=" +userRole);
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId="+ userId);
     }
 
+    function EditarPerfil(){
+        location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/perfil/editarPerfil/editarPerfilWriter.html?userId="+ userId);
+    }
 </script>
 </body>
 </html>

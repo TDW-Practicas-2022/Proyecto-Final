@@ -1,0 +1,113 @@
+<html>
+<head>
+    <title>Details Entidad</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Pagina details de una entidad">
+    <meta name="author" content="Alvaro Aviles Redondo - bp0259">
+    <meta name="author" content="Jesus Anton Diaz - bp0005">
+    <!--- estilos con CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://unpkg.com/jquery@1"></script>
+</head>
+<body onload="CargaDetails()">
+<div class="contenedor-details">
+    <div class="cabecera-principal" id="cabecera_details">
+    </div>
+    <div id="div-botonVolver-details">
+        <input id="boton-volver" type="button" name="Volver" value="Volver" onclick="Volver()" />
+    </div>
+    <div class= "div_info" id="div_info_usuario">
+    </div>
+    <div class="contenido">
+        <div class="div_izquierda_details" id="div_informacion">
+        </div>
+        <div class="div_derecha_details" id="div_wiki">
+        </div>
+    </div>
+</div>
+<script>
+    let userId = null
+    let entidadId = null
+    let userRole = null
+
+    function CargaDetails(){
+        //Recuperamos los datos del querystring del URL
+        const urlParams = new URLSearchParams(window.location.search);
+        userId = urlParams.get('userId');
+        entidadId = urlParams.get('idEntidad');
+
+        CargaInfoUsuario()
+        DetallesProducto();
+    }
+
+    function DetallesProducto(){
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/entities/' + entidadId ,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
+            // dataType: 'json',
+            success: function (data) {
+                let h1 = document.createElement("h1");
+                let text_h1 = document.createTextNode("Anales de la Ciencia - "+data.entity.name);
+                h1.appendChild(text_h1);
+                document.getElementById("cabecera_details").appendChild(h1);
+
+                let h2 = document.createElement("h2");
+                let text_h2 = document.createTextNode(data.entity.name);
+                h2.appendChild(text_h2);
+                document.getElementById("div_informacion").appendChild(h2);
+
+                let h4_1 = document.createElement("h4");
+                let text_h4_1 = document.createTextNode("Birth Date = " +data.entity.birthDate);
+                h4_1.appendChild(text_h4_1);
+                document.getElementById("div_informacion").appendChild(h4_1);
+
+                let h4_2 = document.createElement("h4");
+                let text_h4_2 = document.createTextNode("Death Date = " +data.entity.deathDate);
+                h4_2.appendChild(text_h4_2);
+                document.getElementById("div_informacion").appendChild(h4_2);
+
+                let image = document.createElement("img");
+                image.src = data.entity.imageUrl;
+                image.style.width = "450";
+                image.style.height = "450";
+                image.alt = name;
+                document.getElementById("div_informacion").appendChild(image);
+
+                let iframe = document.createElement("iframe");
+                iframe.src = data.entity.wikiUrl;
+                iframe.title = "Wiki " +data.entity.name;
+                iframe.width = "600";
+                iframe.height = "600";
+                document.getElementById("div_wiki").appendChild(iframe);
+            }
+        });
+    }
+
+    function CargaInfoUsuario(){
+        $.ajax({
+            type: "GET",
+            url: '/api/v1/users/' + userId,
+            headers: {"Authorization": localStorage.getItem('authHeader')},
+            // dataType: 'json',
+            success: function (data) {
+                userRole = data.user.role;
+
+                let p = document.createElement("p");
+                let text = document.createTextNode("User: " +data.user.username+ " - Role: " +data.user.role);
+                p.appendChild(text);
+                document.getElementById("div_info_usuario").appendChild(p);
+            }
+        });
+    }
+
+    function Volver(){
+        if (userRole === "reader"){
+            location.replace("http://127.0.0.1:8000/webPage/readerSubsystem/reader.html?userId=" +userId);
+        }else{
+            location.replace("http://127.0.0.1:8000/webPage/writerSubsystem/writer.html?userId=" +userId);
+        }
+    }
+</script>
+</body>
+</html>
