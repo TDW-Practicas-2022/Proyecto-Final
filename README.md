@@ -76,7 +76,7 @@ importamos en la base de datos que hayamos creado el fichero InitialDump_TDW.sql
 los productos, entidades y productos iniciales así como un usuario Writer con credenciales: 
 
 - userAdmin
-- *userAdmin* 
+- \*userAdmin\* 
 
 ## 🚀Puesta en marcha de la aplicación
 
